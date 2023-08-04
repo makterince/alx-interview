@@ -1,28 +1,41 @@
-#!/usr/bin/python3
-""" this module contains a function that checks if boxes can be unlocked"""
+#!/usr/bin/env python3
+"""
+This module contains a function that checks if boxes can be unlocked.
+"""
 
-def canUnlockAll(boxes):
-    """
-       Determine if all boxes can be opened.
-       Args:
+def can_unlock_all(boxes):
+        """
+        Determine if all boxes can be opened.
+        Args:
             boxes (list[list[int]]): A list of lists representing the boxes and their contained keys.
-       Returns:
+        Returns:
             bool: True if all boxes can be opened, False otherwise.
+        """
+
+
+        index = 0
+        total = set(boxes[0]) | {0}  # Start with keys from box 0 and box 0 itself
+        added = True
+        
+        while added:
+            added = False
+            for j in join(boxes, total[index:]):
+                if j not in total:
+                    total.add(j)
+                    index += 1
+                    added = True
+                    
+        return len(total) == len(boxes)
+    
+    def join(boxes, indices):
     """
-
-    # Initialize the current index to 0 and create a set containing box 0
-    index = 0
-    total = list(set(boxes[0])| {0})
-    added = True
-    while added:
-        added = False
-        # Iterate through keys in the current box and add them to the set
-        for j in join(boxes,total[index:]):
-            if j not in total:
-                total.append(j)
-                index +=1
-                added= True
-    print(total)
-
-    # Return True if the number of opened boxes is equal to the total number of boxes
-    return len(total)==len(boxes)
+    Helper function to iterate through the boxes and get keys from indices.
+    Args:
+        boxes (list[list[int]]): A list of lists representing the boxes and their contained keys.
+        indices (list[int]): List of indices to get keys from.
+    Yields:
+        int: Key value from specified indices.
+    """
+    for i in indices:
+        for key in boxes[i]:
+            yield key
