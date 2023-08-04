@@ -10,15 +10,16 @@ def canUnlockAll(boxes):
     """
 
 
-    visited = [False] * len(boxes)
-    visited[0] = True
-    stack = [0]
+    index = 0
+    total = list(set(boxes[0])| {0})
+    added = True
+    while added:
+        added = False
+        for j in join(boxes,total[index:]):
+            if j not in total:
+                total.append(j)
+                index +=1
+                added= True
+    print(total)
     
-    while stack:
-        current_box = stack.pop()
-        for key in boxes[current_box]:
-            if not visited[key]:
-                visited[key] = True
-                stack.append(key)
-                
-    return all(visited)
+    return len(total)==len(boxes)
