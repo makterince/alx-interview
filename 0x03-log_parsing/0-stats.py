@@ -16,7 +16,9 @@ def print_statistics(total_size, status_counts):
 
 
 log_pattern = re.compile(
-        r"([0-9]+(?:\.[0-9]+){3}) - \[([^\]]+)\] \"GET \/projects\/260 HTTP\/1\.1\" ([0-9]+) ([0-9]+)")
+        (r"([0-9]+(?:\.[0-9]+){3}) - \[([^\]]+)\] "
+            r"\"GET \/projects\/260 HTTP\/1\.1\" "
+            r"([0-9]+) ([0-9]+)"))
 
 total_size = 0
 status_counts = {
