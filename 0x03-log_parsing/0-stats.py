@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+""" module computes a class and prints its metrics """
 
 
 import sys
