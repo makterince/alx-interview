@@ -11,7 +11,6 @@ class LogStats:
         A class to compute and print metrics from log data.
     """
 
-
     def __init__(self):
         """
             Initialize the LogStats instance with initial metrics.
@@ -19,9 +18,9 @@ class LogStats:
 
         self.total_size = 0
         self.status_codes = {200: 0, 301: 0, 400: 0, 401: 0, 403: 0,
-                404: 0, 405: 0, 500: 0}
+                             404: 0, 405: 0, 500: 0}
         self.line_count = 0
-        
+
     def process_line(self, line):
         """
             Process a single log line and update the metrics.
@@ -35,15 +34,15 @@ class LogStats:
         ip_address = parts[0]
         status_code = int(parts[-2])
         file_size = int(parts[-1])
-        
+
         self.total_size += file_size
         if status_code in self.status_codes:
             self.status_codes[status_code] += 1
-            
+
         self.line_count += 1
         if self.line_count % 10 == 0:
             self.print_stats()
-            
+
     def print_stats(self):
         """
             Print the current metrics.
@@ -54,6 +53,7 @@ class LogStats:
             if count > 0:
                 print(f"{code}: {count}")
                 print()
+
 
 if __name__ == "__main__":
     stats = LogStats()
