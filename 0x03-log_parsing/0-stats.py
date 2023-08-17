@@ -1,27 +1,32 @@
 #!/usr/bin/python3
-"""Log parsing"""
-
+"""Log parsing script that computes and prints statistics from log data."""
 
 import sys
 import re
-import signal
 
 
-def print_statistics(total_size, status_counts):
-    """Prints the statistics"""
-    print("Total file size: {}".format(total_size))
-    for code, count in sorted(status_counts.items()):
-        if count > 0:
-            print("{}: {}".format(code, count))
+def print_stats(size, status_codes):
+    """Prints the statistics.
+    Args:
+        size (int): The total file size.
+        status_codes (dict): A dictionary containing status code counts.
+    """
+
+    print("File size: {}".format(size))
+    for key in sorted(status_codes.keys()):
+        if status_codes[key] != 0:
+            print("{}: {}".format(key, status_codes[key]))
 
 
-log_pattern = re.compile(
-        (r"([0-9]+(?:\.[0-9]+){3}) - \[([^\]]+)\] "
-            r"\"GET \/projects\/260 HTTP\/1\.1\" "
-            r"([0-9]+) ([0-9]+)"))
+pattern = re.compile(
+        r"([0-2]?[0-9]?[0-9]\.[0-2]?[0-9]?[0-9]\.[0-2]?[0-9]?[0-9]\."
+        r"[0-2]?[0-9]?[0-9])\ \-\ \[([0-9]{4}\-[0-1]{1}[0-9]{1}\-[0-3]{1}"
+        r"[0-9]{1}\ [0-2]{1}[0-9]{1}:[0-5]{1}[0-9]{1}:[0-5]{1}[0-9]{1}"
+        r"\.[0-9]{6})\]\ (\"GET\ /projects/260 HTTP/1\.1\")\ "
+        r"(200|301|400|401|403|404|405|500)\ ([1-9][0-9]*)")
 
-total_size = 0
-status_counts = {
+size = 0
+status_codes = {
         '200': 0,
         '301': 0,
         '400': 0,
@@ -31,29 +36,23 @@ status_counts = {
         '405': 0,
         '500': 0
         }
-line_counter = 0
-
-
-def interrupt_handler(signum, frame):
-    """Handles KeyboardInterrupt and prints statistics before exiting."""
-    print_statistics(total_size, status_counts)
-    sys.exit(0)
-
-
-signal.signal(signal.SIGINT, interrupt_handler)
+counter = 0
 
 try:
     for line in sys.stdin:
-        match = re.match(log_pattern, line.strip())
-        if match:
-            _, _, status, size = match.groups()
-            total_size += int(size)
-            if status in status_counts:
-                status_counts[status] += 1
-            line_counter += 1
-            if line_counter == 10:
-                print_statistics(total_size, status_counts)
-                line_counter = 0
+        if re.match(pattern, line) is None:
+            continue
+        line = line.strip()
+        line = line.split()
+        size += int(line[-1])
+        try:
+            status_codes[line[-2]] += 1
+        except KeyError:
+            pass
+        counter += 1
+        if counter == 10:
+            print_stats(size, status_codes)
+            counter = 0
 except KeyboardInterrupt:
-    print_statistics(total_size, status_counts)
-    sys.exit(0)
+    print_stats(size, status_codes)
+    raise
