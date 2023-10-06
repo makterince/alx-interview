@@ -1,57 +1,29 @@
 #!/usr/bin/python3
-"""Module defining isWinner function."""
+"""Program that performs prime game"""
 
 
 def isWinner(x, nums):
-    """Function to get who has won in prime game"""
-    mariaWinsCount = 0
-    benWinsCount = 0
-
-    for num in nums:
-        roundsSet = list(range(1, num + 1))
-        primesSet = primes_in_range(1, num)
-
-        if not primesSet:
-            benWinsCount += 1
+    """Function that performs prime game"""
+    if not nums or x < 1:
+        return None
+    n = max(nums)
+    fltr = [True for _ in range(max(n + 1, 2))]
+    for i in range(2, int(pow(n, 0.5)) + 1):
+        if not fltr[i]:
             continue
-
-        isMariaTurns = True
-
-        while(True):
-            if not primesSet:
-                if isMariaTurns:
-                    benWinsCount += 1
-                else:
-                    mariaWinsCount += 1
-                break
-
-            smallestPrime = primesSet.pop(0)
-            roundsSet.remove(smallestPrime)
-
-            roundsSet = [x for x in roundsSet if x % smallestPrime != 0]
-
-            isMariaTurns = not isMariaTurns
-
-    if mariaWinsCount > benWinsCount:
-        return "Winner: Maria"
-
-    if mariaWinsCount < benWinsCount:
-        return "Winner: Ben"
-
-    return None
-
-
-def is_prime(n):
-    """Returns True if n is prime, else False."""
-    if n < 2:
-        return False
-    for i in range(2, int(n ** 0.5) + 1):
-        if n % i == 0:
-            return False
-    return True
-
-
-def primes_in_range(start, end):
-    """Returns a list of prime numbers between start and end (inclusive)."""
-    primes = [n for n in range(start, end+1) if is_prime(n)]
-    return primes
+        for j in range(i * i, n + 1, i):
+            fltr[j] = False
+    fltr[0] = fltr[1] = False
+    c = 0
+    for i in range(len(fltr)):
+        if fltr[i]:
+            c += 1
+        fltr[i] = c
+    plyr1 = 0
+    for n in nums:
+        plyr1 += fltr[n] % 2 == 1
+    if plyr1 * 2 == len(nums):
+        return None
+    if plyr1 * 2 > len(nums):
+        return "Maria"
+    return "Ben"
